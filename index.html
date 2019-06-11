@@ -1,0 +1,101 @@
+
+<script>
+
+//  Service Worker demo.
+
+    var debugMode = true;
+
+
+    var serviceWorker = navigator.serviceWorker; // sw container //
+    debugMode && console.log({"serviceWorker": serviceWorker});
+
+    if ( serviceWorker.controller ) {
+        serviceWorker.controller.addEventListener("statechange", function(){
+            debugMode && console.log({"old sw controller state": this.state});
+        });
+    }
+
+    serviceWorkerRegistration( serviceWorker, {
+        url: "/service_worker/demo-sw1.2.js",
+        opt: {scope: "/service_worker/"},   // "scope" MUST BE AN OBJECT.
+    });
+
+
+
+
+//  ServiceWorkerClient.js
+
+
+    function serviceWorkerRegistration( serviceWorker, options ){
+
+        if ( !serviceWorker ) { 
+            console.log(`Oh no! Your browser doesn't support a feature needed to run this app (navigator.serviceWorker). Try using a different browser.`); return; 
+        }
+
+        serviceWorker.register(options.url, options.opt).then(function (reg) {
+
+            registration = reg;
+
+            debugMode && console.log({"registration": reg});
+
+
+        //  RECEIVE MESSAGES FROM SERVICE WORKER.
+
+            reg.addEventListener("statechange", function(){
+
+                debugMode && console.log({"reg active state": reg.active.state});
+
+            });
+
+        //  AN UPDATE OF SERVICE WORKER DETECTED.
+
+            reg.addEventListener("updatefound", function(){
+
+                debugMode && console.log("new service worker update found:");
+
+                var newSWController = reg.installing;
+
+                debugMode && console.log({"new sw controller": newSWController});
+
+                newSWController.addEventListener("statechange", function(){
+                    debugMode && console.log({"new sw controller state": this.state});
+                    if ( this.state === "activated") {/* do something? */}
+                });
+
+            });
+
+        //  RECEIVE MESSAGES FROM SERVICE WORKER.
+
+            serviceWorker.addEventListener("message", function(e){
+
+                debugMode && console.log({"sw message event": e});
+
+                debugMode && console.log({"received sw data": e.data});
+
+            });
+
+        }).catch(function(err) { 
+            console.error(err);
+        });
+
+    }
+
+        //  ------------------------------- //
+        //                                  //
+        //  Refresh to activate the worker. //
+        //  if (!registration.active) {     //
+        //      location.reload(); return;  //
+        //  }                               //
+        //  ------------------------------- //
+
+    function serviceWorkerPostMessage( serviceWorker, data ){
+
+        serviceWorker.controller.postMessage(data);
+
+    }
+
+
+</script>
+
+<script src="/scene/js/zangodb.min.js"></script>
+<script src="/scene/js/AW3D.db.js"></script>
