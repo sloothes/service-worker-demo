@@ -1,17 +1,11 @@
-//  demo-sw.js (2.1)
+//  demo-sw.js (v3.0)
 
-    self.version = 2.1;
+    self.version = 3.0;
     var debugMode = true;
 
     self.importScripts(
         "/js/Objectid.js",
         "/js/zangodb.min.js",
-        "/three/three.js",
-        "/three/Animation.js",
-        "/three/AnimationHandler.js",
-        "/three/KeyFrameAnimation.js",
-        "/AW3D_js/AW3D-dev0.3.2.js",
-        "/AW3D_db/AW3D.db.js",
     );
 
     var skinned = {};
@@ -84,4 +78,83 @@
 
         debugMode && console.log(collections);
 
+        return;
+
     }
+
+//  Install.
+
+    async function install(){
+
+        await installDB("/AW3D_db/dev_DB_v3.6.json");
+
+        activate();
+
+    }
+
+//  Activate.
+
+    function activate(){
+
+        self.skipWaiting();
+
+    }
+
+
+//  Get Clients.
+
+    function getClinet(){
+
+        self.clients.matchAll().then(function(clients){
+
+            client = clients[0];
+
+            console.log({"client": client});
+
+        });
+
+    }
+
+
+//  Self Unistall.
+
+    function unistall(){
+
+        self.registration.unregister().then(function(){
+
+            return self.clients.matchAll();
+
+        }).then(function(clients) {
+
+            clients.forEach(function(client){
+                client.navigate(client.url);
+                console.log(`service worker unistalled from client "${client.url}"`);
+            });
+
+        });
+
+    }
+
+
+//  SERVICE WORKER EVENT LISTENERS.
+
+    self.addEventListener("fetch", async function(e){
+
+        caches.match( e.request ).then( function(response){
+
+            if ( !response ) debugMode && console.log( e.request.url );
+
+        });
+
+    });
+
+
+//  Receiving message from clients.
+
+    self.addEventListener("message", function(e){
+
+        debugMode && console.log({"received client data": e.data});
+
+    });
+
+
