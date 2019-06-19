@@ -1,4 +1,4 @@
-//  demo-sw.js (v3.0)
+//  demo-sw.js (sw 3.0)
 
     self.version = 3.0;
     var debugMode = true;
