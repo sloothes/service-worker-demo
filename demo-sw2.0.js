@@ -1,6 +1,6 @@
-//  demo-sw.js (sw 3.0)
+//  demo-sw.js (sw 2.0)
 
-    self.version = 3.0;
+    self.version = 2.0;
     var debugMode = true;
 
     self.importScripts(
